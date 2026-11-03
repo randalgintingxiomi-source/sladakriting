@@ -1,0 +1,10 @@
+SMART LETTUCE MONITORING - VERSI REVISI
+1. Ekstrak ZIP dan buka index.html melalui XAMPP/localhost atau server lokal.
+2. Menu Pengaturan: sesuaikan URL Firebase dan PATH dengan struktur database aktual.
+3. Masukkan URL Live Stream dan URL Snapshot ESP32-CAM sesuai firmware.
+4. Beranda/History membaca data sensor dari Firebase REST API.
+5. LSTM dan CNN belum menjadi model AI aktif. Prediksi hari 1-42 adalah DEMO/ilustrasi dan harus diganti output model terlatih.
+6. Foto otomatis 10 menit berjalan selama halaman web terbuka; endpoint snapshot perlu mendukung akses browser/CORS.
+7. Export Excel mengunduh riwayat sensor yang berhasil dibaca dari Firebase.
+8. Foto kamera dan upload CNN pada versi ini masih tersimpan sementara di sesi browser. Penyimpanan permanen memerlukan Firebase Storage.
+9. URL Firebase awal disalin dari versi sebelumnya; periksa kembali URL, path, dan aturan akses database.

@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Smart Lettuce Monitoring</title><link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+  <div class="brand"><span class="brand-icon">🥬</span><div><b>SMART LETTUCE</b><small>MONITORING SYSTEM</small></div></div>
+  <nav>
+    <button class="nav active" data-page="dashboard">▦ <span>Beranda</span></button>
+    <button class="nav" data-page="lstm">⌁ <span>Prediksi LSTM</span></button>
+    <button class="nav" data-page="cnn">▧ <span>Analisis CNN</span></button>
+    <button class="nav" data-page="camera">◉ <span>Camera Live</span></button>
+    <button class="nav" data-page="history">◷ <span>History</span></button>
+    <button class="nav" data-page="settings">⚙ <span>Pengaturan</span></button>
+  </nav>
+  <div class="side-foot"><div><i id="dot"></i><span id="conn">Menunggu koneksi</span></div><small id="clock">--:--:-- WIB</small></div>
+</aside>
+<main>
+<header><button id="menu" class="menu">☰</button><div><small>SMART FARMING / SELADA KERITING</small><h1 id="title">Beranda & Kontrol</h1></div><span class="live" id="top-pump">POMPA: —</span></header>
+<div class="content">
+<section class="page active" id="dashboard">
+  <div class="intro"><div><small>MONITORING REAL-TIME</small><h2>Beranda & Kontrol Utama</h2><p>Pantau kondisi sensor, pompa, dan tanaman selada.</p></div><span class="date" id="today"></span></div>
+  <div class="metrics">
+    <article class="metric"><label>KELEMBAPAN TANAH</label><strong id="soil">—<em>%</em></strong><div class="bar"><i id="soilbar"></i></div><small id="soil-note">Menunggu Firebase</small></article>
+    <article class="metric"><label>SUHU UDARA</label><strong id="temp">—<em>°C</em></strong><small id="temp-note">Menunggu Firebase</small></article>
+    <article class="metric"><label>KELEMBAPAN UDARA</label><strong id="air">—<em>%</em></strong><div class="bar"><i id="airbar"></i></div><small id="air-note">Menunggu Firebase</small></article>
+  </div>
+  <div class="cols">
+    <article class="panel pump-panel"><div class="panel-head"><div><h3>Status Pompa</h3><p>Status aktual dari perangkat/Firebase</p></div><span class="pill" id="pump-pill">BELUM ADA DATA</span></div><div class="pump-state"><div class="pump-icon">♧</div><div><strong id="pump">—</strong><small id="pump-time">Menunggu status pompa</small></div></div><div class="status-row"><span>Koneksi perangkat</span><b id="device-state">Belum diketahui</b></div></article>
+    <article class="panel plant-panel"><div class="panel-head"><div><h3>Foto Tanaman Selada</h3><p>Foto dokumentasi terbaru</p></div><span class="pill">TANAMAN</span></div><div class="plant-photo"><img id="plant-photo" src="https://images.unsplash.com/photo-1622206151226-18ca2c9ab4a1?w=900" alt="Ilustrasi tanaman selada"><span class="photo-caption">Foto ilustrasi — ganti dengan foto perangkat</span></div></article>
+  </div>
+  <article class="panel"><div class="panel-head"><div><h3>Grafik Sensor Real-Time</h3><p>Grafik menampilkan tiga sensor; data demo akan otomatis diganti saat Firebase menerima data alat.</p></div><span class="live-dot">● LIVE</span></div><div class="chart-wrap"><canvas id="sensorChart"></canvas><div id="chart-empty" class="chart-empty">Menunggu data sensor dari Firebase…</div></div><div class="legend"><span class="lsoil">● Kelembapan tanah (%)</span><span class="ltemp">● Suhu udara (°C)</span><span class="lair">● Kelembapan udara (%)</span></div></article>
+</section>
+
+<section class="page" id="lstm">
+  <div class="pageintro"><small>PREDIKSI PERTUMBUHAN TANAMAN</small><h2>Prediksi LSTM</h2><p>Data aktual hari ini dan prediksi perkembangan tanaman dari hari ke hari hingga target 42 hari.</p></div>
+  <article class="panel age-panel"><div><small>UMUR TANAMAN</small><strong><span id="plant-age">15</span> <em> / 42 hari</em></strong><p>Hari tanaman dihitung sejak tanggal mulai tanam.</p></div><div class="progress"><i id="age-progress"></i></div><div class="age-foot"><span>Hari pertama</span><b>Target panen: 42 hari</b></div></article>
+  <h3 class="section-title">A. Data Aktual Hari Ini</h3>
+  <article class="panel actual-panel">
+    <div class="actual-grid">
+      <div class="actual-item"><label>Kelembapan tanah</label><b id="actual-soil">—</b></div>
+      <div class="actual-item"><label>Suhu udara</label><b id="actual-temp">—</b></div>
+      <div class="actual-item"><label>Kelembapan udara</label><b id="actual-air">—</b></div>
+      <div class="actual-item"><label>Lebar daun</label><b id="actual-leaf">Belum tersedia</b></div>
+    </div>
+    <div class="maturity"><div><b>Kematangan aktual</b><strong id="actual-maturity">—</strong></div><div class="maturity-bar"><i id="maturity-bar"></i></div><span class="stage" id="actual-stage">Menunggu data/model</span></div>
+    <p class="hint">Data sensor berasal dari Firebase. Lebar daun dan kematangan memerlukan pengukuran/rumus atau model yang sudah divalidasi.</p>
+  </article>
+  <h3 class="section-title">Prediksi Perkembangan Tanaman – 4 Hari</h3>
+  <article class="panel">
+    <div class="panel-head"><div><h3>Pengamatan Harian dan Prediksi LSTM</h3><p>Unggah foto tanaman pada hari pengamatan. Hari berikutnya dapat diisi saat foto terbaru tersedia.</p></div><span class="pill">LSTM</span></div>
+    <div class="day-grid" id="day-grid"></div>
+    <p class="hint">Setiap kartu memiliki unggahan foto sendiri. Nilai prediksi saat ini hanya DEMO; hasil LSTM sebenarnya memerlukan model terlatih. Data sensor aktual dibaca dari Firebase.</p>
+  </article>
+  <h3 class="section-title">C. Grafik Tingkat Kematangan Berdasarkan Tanggal</h3>
+  <article class="panel"><div class="panel-head"><div><h3>Grafik Kematangan Tanaman</h3><p>Perbandingan perkembangan aktual dan prediksi.</p></div><span class="pill">0–100%</span></div><div class="filter-row"><label>Dari tanggal <input type="date" id="date-from"></label><label>Sampai tanggal <input type="date" id="date-to"></label><button class="secondary" id="filter-chart">Terapkan</button></div><div class="chart-wrap tall"><canvas id="maturityChart"></canvas></div><div class="legend"><span class="lsoil">● Aktual</span><span class="ltemp">● Prediksi LSTM</span></div></article>
+</section>
+
+<section class="page" id="cnn">
+  <div class="pageintro"><small>COMPUTER VISION</small><h2>Analisis CNN</h2><p>Unggah foto daun selada untuk menyiapkan analisis visual kondisi tanaman.</p></div>
+  <div class="cols">
+    <article class="panel"><h3>Upload Foto Tanaman</h3><p>Pilih foto dari perangkat. Hasil analisis muncul setelah model CNN terhubung.</p><label class="upload">＋ Pilih Foto<input id="cnn-upload" type="file" accept="image/*" hidden></label><div class="cnn-preview"><img id="cnn-photo" hidden><div id="cnn-empty">📷<br>Foto yang dipilih akan tampil di sini</div></div><div class="button-row"><button id="analyze-cnn" class="primary" disabled>Analisis Foto</button><button id="clear-cnn" class="secondary">Hapus Foto</button></div><small id="cnn-filename" class="hint">Belum ada foto dipilih</small></article>
+    <article class="panel"><h3>Hasil Analisis CNN</h3><div class="cnn-result" id="cnn-result"><div class="result-icon">◎</div><b>Belum ada hasil analisis</b><p>Upload foto terlebih dahulu. Klasifikasi sehat/layu, luas daun, dan tingkat kematangan hanya dapat ditampilkan setelah model CNN terlatih dihubungkan.</p></div><div class="status-row"><span>Kondisi daun</span><b id="cnn-condition">—</b></div><div class="status-row"><span>Estimasi luas daun</span><b id="cnn-area">—</b></div><div class="status-row"><span>Tingkat kematangan</span><b id="cnn-maturity">—</b></div></article>
+  </div>
+</section>
+
+<section class="page" id="camera">
+  <div class="pageintro"><small>ESP32-CAM</small><h2>Camera Live</h2><p>Pantau tanaman secara langsung dan ambil foto untuk dokumentasi.</p></div>
+  <article class="panel"><div class="panel-head"><div><h3>Live Stream ESP32-CAM</h3><p id="camera-address">Alamat kamera belum diatur</p></div><button class="secondary" id="reloadcam">Muat Ulang</button></div><div class="camera-box"><img id="livecam" alt="Live camera"><span id="livecam-error">Kamera belum tersambung. Atur URL ESP32-CAM di Pengaturan.</span></div><div class="button-row"><button class="primary" id="capture">◎ Ambil Foto</button><span class="hint">Pengambilan otomatis: setiap 10 menit selama halaman terbuka.</span></div><div class="status-row"><span>Foto otomatis berikutnya</span><b id="next-capture">Menunggu kamera</b></div></article>
+</section>
+
+<section class="page" id="history">
+  <div class="pageintro"><small>ARSIP PEMANTAUAN</small><h2>History</h2><p>Riwayat data sensor, aktivitas pompa, dan hasil pengamatan foto.</p></div>
+  <article class="panel"><div class="panel-head"><div><h3>Riwayat Data Real-Time & Pompa</h3><p>Data sensor dan perubahan status pompa yang diterima dari Firebase.</p></div><button class="secondary" id="export">↓ Export Excel</button></div><div class="tablewrap"><table><thead><tr><th>Waktu</th><th>Kelembapan Tanah</th><th>Suhu</th><th>Kelembapan Udara</th><th>Pompa</th></tr></thead><tbody id="history-body"><tr><td colspan="5" class="empty">Menunggu data Firebase…</td></tr></tbody></table></div></article>
+  <article class="panel"><div class="panel-head"><div><h3>Riwayat Foto & Hasil CNN</h3><p>Dokumentasi foto berkala setiap 10 menit dan hasil analisis yang tersedia.</p></div><span class="pill">10 MENIT</span></div><div id="photo-history" class="photo-history"><p class="empty">Belum ada foto tersimpan.</p></div></article>
+</section>
+
+<section class="page" id="settings">
+  <div class="pageintro"><small>KONFIGURASI SISTEM</small><h2>Pengaturan</h2><p>Hubungkan website ke Firebase dan ESP32-CAM.</p></div>
+  <article class="panel settings"><h3>Firebase Realtime Database</h3><label>URL Firebase</label><input id="firebase-url" value="https://fir-mikrokontroler-default-rtdb.asia-southeast1.firebasedatabase.app"><label>Path data sensor</label><input id="firebase-path" placeholder="Contoh: sensor (sesuaikan struktur database)"><label>Interval baca data real-time</label><select id="interval"><option value="1000">1 detik</option><option value="3000">3 detik</option><option value="5000" selected>5 detik</option><option value="10000">10 detik</option></select><hr><h3>Konfigurasi ESP32-CAM</h3><label>URL Live Stream</label><input id="camera-url" placeholder="Contoh: http://192.168.4.1:81/stream"><label>URL Ambil Foto / Snapshot</label><input id="snapshot-url" placeholder="Contoh: http://192.168.4.1/capture"><p class="hint">Alamat harus sesuai firmware ESP32-CAM. Browser dan kamera harus berada pada jaringan yang dapat saling mengakses.</p><label>Umur tanaman saat ini (hari)</label><input id="age-setting" type="number" min="1" max="42" value="15"><label>Tanggal mulai tanam</label><input id="plant-date" type="date"><button id="save" class="primary">Simpan Pengaturan & Hubungkan</button><div class="status-row"><span>Status Firebase</span><b id="settings-status">Memeriksa…</b></div><div class="status-row"><span>Status Kamera</span><b id="camera-status">Belum diuji</b></div><div class="status-row"><span>Model LSTM / CNN</span><b class="warning">Belum dihubungkan</b></div></article>
+</section>
+</div>
+<footer>SMART LETTUCE MONITORING · Data DEMO diberi label dan tidak dianggap sebagai hasil perangkat.</footer>
+</main></div>
+<script src="script.js"></script>
+</body></html>
